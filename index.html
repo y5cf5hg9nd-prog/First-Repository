@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Animated Matte Slideshow</title>
+
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #0d1015;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 36px;
+      box-sizing: border-box;
+    }
+
+    .photo-stage {
+      position: relative;
+      display: inline-block;
+      overflow: hidden;
+      border-radius: 18px;
+      background: #11161d;
+      box-shadow:
+        0 16px 45px rgba(0,0,0,.50),
+        0 0 0 1px rgba(255,255,255,.05) inset;
+    }
+
+    #dotAnimation {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      display: block;
+    }
+
+    .photo-wrap {
+      position: relative;
+      z-index: 1;
+      padding: 54px;
+      box-sizing: border-box;
+    }
+
+    .photo-frame {
+      position: relative;
+      width: min(1200px, 88vw);
+      aspect-ratio: 16 / 9;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #000;
+      box-shadow:
+        0 12px 30px rgba(0,0,0,.45),
+        0 0 0 1px rgba(255,255,255,.08);
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain; /* use cover if you want the frame fully filled */
+      opacity: 0;
+      transition: opacity 1.4s ease;
+      display: block;
+      background: #000;
+    }
+
+    .slide.visible {
+      opacity: 1;
+    }
+
+    .caption {
+      position: absolute;
+      left: 18px;
+      bottom: 16px;
+      z-index: 2;
+      color: rgba(255,255,255,.80);
+      font-size: 13px;
+      letter-spacing: .02em;
+      background: rgba(0,0,0,.28);
+      padding: 8px 12px;
+      border-radius: 999px;
+      backdrop-filter: blur(4px);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="photo-stage" id="stage">
+    <canvas id="dotAnimation"></canvas>
+
+    <div class="photo-wrap">
+      <div class="photo-frame">
+        <img id="slideA" class="slide visible" src="photo1.jpg" alt="Slide A">
+        <img id="slideB" class="slide" src="photo2.jpg" alt="Slide B">
+      </div>
+    </div>
+
+    <div class="caption">Animated matte slideshow</div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById("dotAnimation");
+    const ctx = canvas.getContext("2d");
+    const stage = document.getElementById("stage");
+    const slideA = document.getElementById("slideA");
+    const slideB = document.getElementById("slideB");
+    const photoFrame = document.querySelector(".photo-frame");
+
+    // ===== slideshow settings =====
+    const photos = [
+      "DSC_3062.jpg",
+      "DSC_3063.jpg",
+      "DSC_3064.jpg",
+      "DSC_3065.jpg"
+    ];
+
+    const slideDuration = 10000; // 10 seconds between changes
+    const fadeDuration = 1400;   // should match CSS transition roughly
+    // ==============================
+
+    let currentIndex = 0;
+    let showingA = true;
+
+    // Preload images
+    photos.forEach(src => {
+      const img = new Image();
+      img.src = src;
+    });
+
+    function advanceSlide() {
+      const nextIndex = (currentIndex + 1) % photos.length;
+      const incoming = showingA ? slideB : slideA;
+      const outgoing = showingA ? slideA : slideB;
+
+      incoming.src = photos[nextIndex];
+
+      // Wait briefly to ensure src is applied
+      requestAnimationFrame(() => {
+        incoming.classList.add("visible");
+        outgoing.classList.remove("visible");
+      });
+
+      currentIndex = nextIndex;
+      showingA = !showingA;
+
+      // Re-measure after image change in case layout needs adjustment
+      setTimeout(resizeCanvas, fadeDuration + 100);
+    }
+
+    setInterval(advanceSlide, slideDuration);
+
+    // ===== animation settings =====
+    const spacing = 24;
+    const normalRadius = 1.4;
+    const glowRadius = 135;
+    const glowPower = 1.7;
+    const orbitTime = 16; // seconds forward; 32 sec round trip
+
+    const dotColor = { r: 70, g: 86, b: 106 };
+    const glowColor = { r: 125, g: 205, b: 255 };
+    const backgroundColor = "#11161d";
+
+    let width = 0;
+    let height = 0;
+    let dots = [];
+
+    let photoLeft = 0;
+    let photoTop = 0;
+    let photoRight = 0;
+    let photoBottom = 0;
+
+    function resizeCanvas() {
+      const stageRect = stage.getBoundingClientRect();
+      const frameRect = photoFrame.getBoundingClientRect();
+
+      width = stageRect.width;
+      height = stageRect.height;
+
+      photoLeft   = frameRect.left - stageRect.left;
+      photoTop    = frameRect.top - stageRect.top;
+      photoRight  = photoLeft + frameRect.width;
+      photoBottom = photoTop + frameRect.height;
+
+      const dpr = window.devicePixelRatio || 1;
+
+      canvas.width = Math.floor(width * dpr);
+      canvas.height = Math.floor(height * dpr);
+
+      canvas.style.width = width + "px";
+      canvas.style.height = height + "px";
+
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      createDots();
+    }
+
+    function createDots() {
+      dots = [];
+
+      const columns = Math.ceil(width / spacing) + 2;
+      const rows = Math.ceil(height / spacing) + 2;
+
+      for (let row = 0; row < rows; row++) {
+        for (let column = 0; column < columns; column++) {
+          const x = column * spacing;
+          const y = row * spacing;
+
+          const underneathPhoto =
+            x > photoLeft &&
+            x < photoRight &&
+            y > photoTop &&
+            y < photoBottom;
+
+          if (!underneathPhoto) {
+            dots.push({ x, y });
+          }
+        }
+      }
+    }
+
+    function lerp(a, b, t) {
+      return a + (b - a) * t;
+    }
+
+    function glowPosition(time) {
+      const inset = 24;
+
+      const left   = photoLeft - inset;
+      const right  = photoRight + inset;
+      const top    = photoTop - inset;
+      const bottom = photoBottom + inset;
+
+      const horizontal = right - left;
+      const vertical = bottom - top;
+      const perimeter = horizontal * 2 + vertical * 2;
+
+      let rawDistance = (time / orbitTime) * perimeter;
+      let cycleDistance = rawDistance % (perimeter * 2);
+
+      let distance;
+      if (cycleDistance <= perimeter) {
+        distance = cycleDistance;
+      } else {
+        distance = (perimeter * 2) - cycleDistance;
+      }
+
+      if (distance < horizontal) {
+        return { x: left + distance, y: top };
+      }
+
+      distance -= horizontal;
+
+      if (distance < vertical) {
+        return { x: right, y: top + distance };
+      }
+
+      distance -= vertical;
+
+      if (distance < horizontal) {
+        return { x: right - distance, y: bottom };
+      }
+
+      distance -= horizontal;
+
+      return { x: left, y: bottom - distance };
+    }
+
+    function animate(ms) {
+      const time = ms / 1000;
+
+      ctx.fillStyle = backgroundColor;
+      ctx.fillRect(0, 0, width, height);
+
+      const glow = glowPosition(time);
+      const glowX = glow.x;
+      const glowY = glow.y;
+
+      const gradient = ctx.createRadialGradient(
+        glowX, glowY, 0,
+        glowX, glowY, glowRadius * 1.5
+      );
+
+      gradient.addColorStop(0, "rgba(130,210,255,.30)");
+      gradient.addColorStop(0.45, "rgba(100,180,240,.10)");
+      gradient.addColorStop(1, "rgba(100,180,240,0)");
+
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, width, height);
+
+      for (const dot of dots) {
+        const dx = dot.x - glowX;
+        const dy = dot.y - glowY;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+
+        let influence = 0;
+
+        if (distance < glowRadius) {
+          influence = 1 - distance / glowRadius;
+          influence = Math.pow(influence, glowPower);
+        }
+
+        const r = Math.round(lerp(dotColor.r, glowColor.r, influence));
+        const g = Math.round(lerp(dotColor.g, glowColor.g, influence));
+        const b = Math.round(lerp(dotColor.b, glowColor.b, influence));
+        const radius = lerp(normalRadius, normalRadius * 2.8, influence);
+        const alpha = lerp(0.30, 1, influence);
+
+        ctx.beginPath();
+        ctx.arc(dot.x, dot.y, radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${r},${g},${b},${alpha})`;
+        ctx.fill();
+      }
+
+      requestAnimationFrame(animate);
+    }
+
+    window.addEventListener("resize", resizeCanvas);
+    new ResizeObserver(resizeCanvas).observe(stage);
+
+    // Make sure first image is loaded before sizing
+    slideA.addEventListener("load", resizeCanvas);
+    slideB.addEventListener("load", resizeCanvas);
+
+    resizeCanvas();
+    requestAnimationFrame(animate);
+  </script>
+</body>
+</html>
