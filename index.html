@@ -1,12 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
   <title>Tres Pescadores Slideshow</title>
 
   <style>
-    html, body {
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
       margin: 0;
       padding: 0;
       background: #0d1015;
@@ -15,307 +24,398 @@
 
     body {
       min-height: 100vh;
+
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 36px;
-      box-sizing: border-box;
+
+      padding: 30px;
     }
+
+
+    /* =========================================
+       COMPLETE SLIDESHOW
+       ========================================= */
 
     .photo-stage {
       position: relative;
+
       display: inline-block;
       overflow: hidden;
-      border-radius: 18px;
+
       background: #11161d;
+
+      border-radius: 18px;
+
       box-shadow:
-        0 16px 45px rgba(0,0,0,.50),
-        0 0 0 1px rgba(255,255,255,.05) inset;
+        0 18px 50px rgba(0, 0, 0, .55),
+        0 0 0 1px rgba(255, 255, 255, .05) inset;
     }
+
+
+    /* Animated background */
 
     #dotAnimation {
       position: absolute;
       inset: 0;
+
       width: 100%;
       height: 100%;
+
       z-index: 0;
-      display: block;
     }
+
+
+    /* Animated matte width */
 
     .photo-wrap {
       position: relative;
       z-index: 1;
-      padding: 54px;
-      box-sizing: border-box;
+
+      padding: 56px;
     }
+
+
+    /* =========================================
+       PHOTO FRAME
+       ========================================= */
 
     .photo-frame {
       position: relative;
+
       width: min(1200px, 88vw);
+
       aspect-ratio: 16 / 9;
-      border-radius: 8px;
+
       overflow: hidden;
+
       background: #000;
+
+      border-radius: 7px;
+
       box-shadow:
-        0 12px 30px rgba(0,0,0,.45),
-        0 0 0 1px rgba(255,255,255,.08);
+        0 12px 35px rgba(0, 0, 0, .50),
+        0 0 0 1px rgba(255, 255, 255, .08);
     }
+
 
     .slide {
       position: absolute;
       inset: 0;
+
       width: 100%;
       height: 100%;
-      object-fit: contain; /* use cover if you want the frame fully filled */
-      opacity: 0;
-      transition: opacity 1.4s ease;
-      display: block;
+
+      object-fit: contain;
+
       background: #000;
+
+      opacity: 0;
+
+      transition:
+        opacity 1.4s ease;
+
+      user-select: none;
+      -webkit-user-drag: none;
     }
+
 
     .slide.visible {
       opacity: 1;
     }
 
+
+    /* =========================================
+       CONTROLS
+       ========================================= */
+
     .slideshow-controls {
-    position: absolute;
-    z-index: 10;
+      position: absolute;
 
-    left: 50%;
-    bottom: 16px;
-    transform: translateX(-50%);
+      z-index: 10;
 
-    display: flex;
-    align-items: center;
-    gap: 6px;
+      left: 50%;
+      bottom: 15px;
 
-    padding: 6px 10px;
+      transform: translateX(-50%);
 
-    background: rgba(8, 12, 17, 0.58);
-    border: 1px solid rgba(255,255,255,0.12);
-    border-radius: 999px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
 
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+      padding: 6px 10px;
 
-    box-shadow: 0 5px 20px rgba(0,0,0,0.28);
+      background:
+        rgba(8, 12, 17, .62);
 
-    opacity: 0.72;
-    transition: opacity 0.25s ease;
-}
+      border:
+        1px solid rgba(255, 255, 255, .12);
 
-.slideshow-controls:hover {
-    opacity: 1;
-}
+      border-radius: 999px;
 
-.slideshow-controls button {
-    appearance: none;
-    border: 0;
-    background: transparent;
-    color: rgba(255,255,255,0.92);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
 
-    width: 34px;
-    height: 30px;
+      box-shadow:
+        0 6px 22px rgba(0, 0, 0, .30);
 
-    font-size: 21px;
-    line-height: 1;
+      opacity: .72;
 
-    cursor: pointer;
-    border-radius: 50%;
+      transition:
+        opacity .25s ease;
+    }
 
-    transition:
-        background 0.2s ease,
-        color 0.2s ease;
-}
 
-.slideshow-controls button:hover {
-    background: rgba(255,255,255,0.12);
-    color: white;
-}
+    .slideshow-controls:hover {
+      opacity: 1;
+    }
 
-#pauseButton {
-    font-size: 13px;
-}
 
-#slideCounter {
-    margin-left: 7px;
-    padding-left: 10px;
+    .slideshow-controls button {
+      appearance: none;
 
-    border-left: 1px solid rgba(255,255,255,0.16);
+      border: 0;
 
-    color: rgba(255,255,255,0.68);
-    font-size: 12px;
-    letter-spacing: 0.08em;
+      background: transparent;
 
-    min-width: 35px;
-}
+      color:
+        rgba(255, 255, 255, .90);
+
+      width: 34px;
+      height: 30px;
+
+      border-radius: 50%;
+
+      cursor: pointer;
+
+      font-size: 21px;
+      line-height: 1;
+
+      transition:
+        background .20s ease,
+        color .20s ease;
+    }
+
+
+    .slideshow-controls button:hover {
+      background:
+        rgba(255, 255, 255, .12);
+
+      color: white;
+    }
+
+
+    .slideshow-controls button:disabled {
+      opacity: .30;
+      cursor: default;
+    }
+
+
+    #pauseButton {
+      font-size: 13px;
+    }
+
+
+    #slideCounter {
+      margin-left: 7px;
+
+      padding-left: 10px;
+
+      border-left:
+        1px solid rgba(255, 255, 255, .16);
+
+      color:
+        rgba(255, 255, 255, .66);
+
+      font-size: 12px;
+
+      letter-spacing: .08em;
+
+      min-width: 45px;
+
+      text-align: center;
+    }
+
+
+    /* =========================================
+       MOBILE
+       ========================================= */
+
+    @media (max-width: 700px) {
+
+      body {
+        padding: 10px;
+      }
+
+      .photo-wrap {
+        padding: 32px;
+      }
+
+      .photo-frame {
+        width: 92vw;
+      }
+
+    }
+
   </style>
 </head>
+
+
 <body>
 
-  <div class="photo-stage" id="stage">
+
+  <div
+    class="photo-stage"
+    id="stage"
+  >
+
     <canvas id="dotAnimation"></canvas>
 
+
     <div class="photo-wrap">
-      <div class="photo-frame">
-        <img id="slideA" class="slide visible" src="photo1.jpg" alt="Slide A">
-        <img id="slideB" class="slide" src="photo2.jpg" alt="Slide B">
+
+      <div
+        class="photo-frame"
+        id="photoFrame"
+      >
+
+        <img
+          id="slideA"
+          class="slide"
+          alt="Photograph"
+        >
+
+        <img
+          id="slideB"
+          class="slide"
+          alt="Photograph"
+        >
+
       </div>
+
     </div>
 
+
     <div class="slideshow-controls">
-  <button id="prevButton" aria-label="Previous photo">‹</button>
 
-  <button id="pauseButton" aria-label="Pause slideshow">
-    ❚❚
-  </button>
-
-  <button id="nextButton" aria-label="Next photo">›</button>
-
-  <span id="slideCounter">1 / 4</span>
-</div>
-
-  <script>
-    const canvas = document.getElementById("dotAnimation");
-    const ctx = canvas.getContext("2d");
-    const stage = document.getElementById("stage");
-    const slideA = document.getElementById("slideA");
-    const slideB = document.getElementById("slideB");
-    const photoFrame = document.querySelector(".photo-frame");
-
-    // ===== slideshow settings =====
-let photos = [];
-let currentIndex = 0;
-let showingA = true;
-
-async function loadPhotos() {
-  const apiURL =
-    "https://api.github.com/repos/y5cf5hg9nd-prog/First-Repository/contents/photos";
-
-  try {
-    const response = await fetch(apiURL);
-
-    if (!response.ok) {
-      throw new Error("Could not read photo directory");
-    }
-
-    const files = await response.json();
-
-    photos = files
-      .filter(file =>
-        file.type === "file" &&
-        /\.(jpg|jpeg|png|webp)$/i.test(file.name)
-      )
-      .sort((a, b) =>
-        a.name.localeCompare(b.name, undefined, {
-          numeric: true,
-          sensitivity: "base"
-        })
-      )
-      .map(file => file.download_url);
-
-    if (photos.length === 0) {
-      console.error("No image files found in photos folder.");
-      return;
-    }
-
-    // Preload all photographs
-    photos.forEach(src => {
-      const img = new Image();
-      img.src = src;
-    });
-
-    // Load the first image immediately
-    slideA.src = photos[0];
-    slideA.classList.add("visible");
-
-    // Load the second image in preparation for the first crossfade
-    if (photos.length > 1) {
-      slideB.src = photos[1];
-    }
-
-    updateCounter();
-
-    // Only run the slideshow if there is more than one image
-    if (photos.length > 1) {
-      startTimer();
-    }
-
-  } catch (error) {
-    console.error("Photo loading error:", error);
-  }
-}
+      <button
+        id="prevButton"
+        aria-label="Previous photograph"
+      >
+        ‹
+      </button>
 
 
-function advanceSlide() {
-  if (photos.length < 2) return;
-
-  const nextIndex =
-    (currentIndex + 1) % photos.length;
-
-  const incoming =
-    showingA ? slideB : slideA;
-
-  const outgoing =
-    showingA ? slideA : slideB;
-
-  incoming.src = photos[nextIndex];
-
-  requestAnimationFrame(() => {
-    incoming.classList.add("visible");
-    outgoing.classList.remove("visible");
-  });
-
-  currentIndex = nextIndex;
-  showingA = !showingA;
-
-  updateCounter();
-
-  setTimeout(
-    resizeCanvas,
-    fadeDuration + 100
-  );
-}
+      <button
+        id="pauseButton"
+        aria-label="Pause slideshow"
+      >
+        ❚❚
+      </button>
 
 
-// Start everything after the page loads
-loadPhotos();
-
-    const slideDuration = 10000; // 10 seconds between changes
-    const fadeDuration = 1400;   // should match CSS transition roughly
-    // ==============================
-
-    let currentIndex = 0;
-    let showingA = true;
-
-    // Preload images
-    photos.forEach(src => {
-      const img = new Image();
-      img.src = src;
-    });
-
-    function advanceSlide() {
-      const nextIndex = (currentIndex + 1) % photos.length;
-      const incoming = showingA ? slideB : slideA;
-      const outgoing = showingA ? slideA : slideB;
-
-      incoming.src = photos[nextIndex];
-
-      // Wait briefly to ensure src is applied
-      requestAnimationFrame(() => {
-        incoming.classList.add("visible");
-        outgoing.classList.remove("visible");
-      });
-
-      currentIndex = nextIndex;
-      showingA = !showingA;
-
-      // Re-measure after image change in case layout needs adjustment
-      setTimeout(resizeCanvas, fadeDuration + 100);
-    }
+      <button
+        id="nextButton"
+        aria-label="Next photograph"
+      >
+        ›
+      </button>
 
 
-/* ===== slideshow controls ===== */
+      <span id="slideCounter">
+        —
+      </span>
+
+    </div>
+
+  </div>
+
+
+
+<script>
+
+/* ============================================================
+   SETTINGS
+   ============================================================ */
+
+const SETTINGS = {
+
+  /*
+     Your GitHub repository
+  */
+
+  githubUser:
+    "y5cf5hg9nd-prog",
+
+  repository:
+    "First-Repository",
+
+  branch:
+    "main",
+
+  photoFolder:
+    "photos",
+
+
+  /*
+     Slideshow timing
+  */
+
+  slideDuration:
+    10000,      // 10 seconds
+
+  fadeDuration:
+    1400,       // 1.4 second crossfade
+
+
+  /*
+     Animated matte
+  */
+
+  dotSpacing:
+    24,
+
+  dotRadius:
+    1.4,
+
+  glowRadius:
+    135,
+
+  glowPower:
+    1.7,
+
+  /*
+     Seconds to travel once
+     around the frame.
+
+     It then reverses direction.
+  */
+
+  orbitTime:
+    16
+
+};
+
+
+
+/* ============================================================
+   PAGE ELEMENTS
+   ============================================================ */
+
+const stage =
+  document.getElementById("stage");
+
+const photoFrame =
+  document.getElementById("photoFrame");
+
+const slideA =
+  document.getElementById("slideA");
+
+const slideB =
+  document.getElementById("slideB");
+
+const prevButton =
+  document.getElementById("prevButton");
 
 const pauseButton =
   document.getElementById("pauseButton");
@@ -323,255 +423,1246 @@ const pauseButton =
 const nextButton =
   document.getElementById("nextButton");
 
-const prevButton =
-  document.getElementById("prevButton");
-
 const slideCounter =
   document.getElementById("slideCounter");
 
-let slideTimer = null;
+
+
+/* ============================================================
+   SLIDESHOW STATE
+   ============================================================ */
+
+let photos = [];
+
+let currentIndex = 0;
+
+let showingA = true;
+
 let paused = false;
 
+let slideTimer = null;
 
-function updateCounter() {
-  slideCounter.textContent =
-    `${currentIndex + 1} / ${photos.length}`;
+let transitionInProgress = false;
+
+
+
+/* ============================================================
+   READ THE PHOTOS FOLDER FROM GITHUB
+   ============================================================ */
+
+async function loadPhotoList() {
+
+  const apiURL =
+    `https://api.github.com/repos/` +
+    `${SETTINGS.githubUser}/` +
+    `${SETTINGS.repository}/contents/` +
+    `${SETTINGS.photoFolder}` +
+    `?ref=${SETTINGS.branch}`;
+
+
+  try {
+
+    const response =
+      await fetch(apiURL);
+
+
+    if (!response.ok) {
+
+      throw new Error(
+        "Unable to read photos folder."
+      );
+
+    }
+
+
+    const files =
+      await response.json();
+
+
+    photos =
+      files
+
+        /*
+           Keep only image files.
+        */
+
+        .filter(file =>
+
+          file.type === "file" &&
+
+          /\.(jpg|jpeg|png|webp)$/i
+            .test(file.name)
+
+        )
+
+
+        /*
+           Sort naturally.
+
+           photo2.jpg comes before
+           photo10.jpg.
+        */
+
+        .sort((a, b) =>
+
+          a.name.localeCompare(
+            b.name,
+            undefined,
+            {
+              numeric: true,
+              sensitivity: "base"
+            }
+          )
+
+        )
+
+
+        /*
+           Use the image files from
+           the GitHub Pages photos folder.
+        */
+
+        .map(file =>
+
+          `${SETTINGS.photoFolder}/` +
+          encodeURIComponent(file.name)
+
+        );
+
+
+
+    if (photos.length === 0) {
+
+      slideCounter.textContent =
+        "No photos";
+
+      console.error(
+        "No photographs found."
+      );
+
+      return;
+
+    }
+
+
+    await loadFirstPhoto();
+
+
+    updateControls();
+
+
+    if (photos.length > 1) {
+
+      preloadNextPhoto();
+
+      startTimer();
+
+    }
+
+  }
+
+  catch (error) {
+
+    console.error(
+      "Slideshow error:",
+      error
+    );
+
+    slideCounter.textContent =
+      "Unable to load";
+
+  }
+
 }
 
+
+
+/* ============================================================
+   IMAGE LOADING
+   ============================================================ */
+
+function loadImage(
+  imageElement,
+  source
+) {
+
+  return new Promise(
+    (resolve, reject) => {
+
+      imageElement.onload =
+        () => resolve();
+
+      imageElement.onerror =
+        () => reject(
+          new Error(
+            `Could not load ${source}`
+          )
+        );
+
+      imageElement.src =
+        source;
+
+    }
+  );
+
+}
+
+
+
+async function loadFirstPhoto() {
+
+  await loadImage(
+    slideA,
+    photos[0]
+  );
+
+  slideA.classList.add(
+    "visible"
+  );
+
+  currentIndex = 0;
+
+  showingA = true;
+
+  updateCounter();
+
+  resizeCanvas();
+
+}
+
+
+
+function preloadNextPhoto() {
+
+  if (photos.length < 2)
+    return;
+
+
+  const nextIndex =
+    (currentIndex + 1)
+    % photos.length;
+
+
+  const preload =
+    new Image();
+
+
+  preload.src =
+    photos[nextIndex];
+
+}
+
+
+
+/* ============================================================
+   CHANGE PHOTOGRAPH
+   ============================================================ */
+
+async function showPhoto(
+  requestedIndex
+) {
+
+  if (
+    transitionInProgress ||
+    photos.length < 2
+  ) {
+    return;
+  }
+
+
+  transitionInProgress =
+    true;
+
+
+  const nextIndex =
+
+    (
+      requestedIndex +
+      photos.length
+    )
+
+    % photos.length;
+
+
+
+  const incoming =
+
+    showingA
+      ? slideB
+      : slideA;
+
+
+  const outgoing =
+
+    showingA
+      ? slideA
+      : slideB;
+
+
+  try {
+
+    await loadImage(
+      incoming,
+      photos[nextIndex]
+    );
+
+
+    requestAnimationFrame(
+      () => {
+
+        incoming.classList.add(
+          "visible"
+        );
+
+        outgoing.classList.remove(
+          "visible"
+        );
+
+      }
+    );
+
+
+    currentIndex =
+      nextIndex;
+
+
+    showingA =
+      !showingA;
+
+
+    updateCounter();
+
+
+    setTimeout(
+      () => {
+
+        transitionInProgress =
+          false;
+
+        resizeCanvas();
+
+        preloadNextPhoto();
+
+      },
+
+      SETTINGS.fadeDuration
+
+    );
+
+  }
+
+  catch (error) {
+
+    console.error(error);
+
+    transitionInProgress =
+      false;
+
+  }
+
+}
+
+
+
+/* ============================================================
+   NEXT / PREVIOUS
+   ============================================================ */
+
+async function nextPhoto() {
+
+  await showPhoto(
+    currentIndex + 1
+  );
+
+}
+
+
+
+async function previousPhoto() {
+
+  await showPhoto(
+    currentIndex - 1
+  );
+
+}
+
+
+
+/* ============================================================
+   TIMER
+   ============================================================ */
 
 function startTimer() {
-  clearTimeout(slideTimer);
 
-  if (!paused) {
-    slideTimer = setTimeout(() => {
-      advanceSlide();
-      updateCounter();
-      startTimer();
-    }, slideDuration);
+  clearTimeout(
+    slideTimer
+  );
+
+
+  if (
+    paused ||
+    photos.length < 2
+  ) {
+    return;
   }
+
+
+  slideTimer =
+    setTimeout(
+      async () => {
+
+        await nextPhoto();
+
+        startTimer();
+
+      },
+
+      SETTINGS.slideDuration
+
+    );
+
 }
 
 
-pauseButton.addEventListener("click", () => {
-  paused = !paused;
+
+function resetTimer() {
+
+  clearTimeout(
+    slideTimer
+  );
+
+
+  if (!paused) {
+
+    startTimer();
+
+  }
+
+}
+
+
+
+/* ============================================================
+   PAUSE / PLAY
+   ============================================================ */
+
+function togglePause() {
+
+  paused =
+    !paused;
+
 
   if (paused) {
-    clearTimeout(slideTimer);
 
-    pauseButton.textContent = "▶";
+    clearTimeout(
+      slideTimer
+    );
+
+
+    pauseButton.textContent =
+      "▶";
+
+
     pauseButton.setAttribute(
       "aria-label",
       "Resume slideshow"
     );
 
-  } else {
-    pauseButton.textContent = "❚❚";
+  }
+
+  else {
+
+    pauseButton.textContent =
+      "❚❚";
+
+
     pauseButton.setAttribute(
       "aria-label",
       "Pause slideshow"
     );
 
+
     startTimer();
+
   }
-});
+
+}
 
 
-nextButton.addEventListener("click", () => {
-  advanceSlide();
-  updateCounter();
-  startTimer();
-});
+
+/* ============================================================
+   CONTROLS
+   ============================================================ */
+
+function updateCounter() {
+
+  if (photos.length === 0) {
+
+    slideCounter.textContent =
+      "—";
+
+    return;
+
+  }
 
 
-prevButton.addEventListener("click", () => {
-  currentIndex =
-    (currentIndex - 2 + photos.length) %
-    photos.length;
+  slideCounter.textContent =
 
-  advanceSlide();
-  updateCounter();
-  startTimer();
-});
+    `${currentIndex + 1} / ` +
+    `${photos.length}`;
+
+}
 
 
-updateCounter();
-startTimer();
+
+function updateControls() {
+
+  const onlyOne =
+    photos.length <= 1;
 
 
-    // ===== animation settings =====
-    const spacing = 24;
-    const normalRadius = 1.4;
-    const glowRadius = 135;
-    const glowPower = 1.7;
-    const orbitTime = 16; // seconds forward; 32 sec round trip
+  prevButton.disabled =
+    onlyOne;
 
-    const dotColor = { r: 70, g: 86, b: 106 };
-    const glowColor = { r: 125, g: 205, b: 255 };
-    const backgroundColor = "#11161d";
+  nextButton.disabled =
+    onlyOne;
 
-    let width = 0;
-    let height = 0;
-    let dots = [];
+  pauseButton.disabled =
+    onlyOne;
 
-    let photoLeft = 0;
-    let photoTop = 0;
-    let photoRight = 0;
-    let photoBottom = 0;
+}
 
-    function resizeCanvas() {
-      const stageRect = stage.getBoundingClientRect();
-      const frameRect = photoFrame.getBoundingClientRect();
 
-      width = stageRect.width;
-      height = stageRect.height;
 
-      photoLeft   = frameRect.left - stageRect.left;
-      photoTop    = frameRect.top - stageRect.top;
-      photoRight  = photoLeft + frameRect.width;
-      photoBottom = photoTop + frameRect.height;
+/* ============================================================
+   BUTTON EVENTS
+   ============================================================ */
 
-      const dpr = window.devicePixelRatio || 1;
+prevButton.addEventListener(
+  "click",
+  async () => {
 
-      canvas.width = Math.floor(width * dpr);
-      canvas.height = Math.floor(height * dpr);
+    await previousPhoto();
 
-      canvas.style.width = width + "px";
-      canvas.style.height = height + "px";
+    resetTimer();
 
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+);
 
-      createDots();
+
+nextButton.addEventListener(
+  "click",
+  async () => {
+
+    await nextPhoto();
+
+    resetTimer();
+
+  }
+);
+
+
+pauseButton.addEventListener(
+  "click",
+  togglePause
+);
+
+
+
+/* ============================================================
+   KEYBOARD CONTROLS
+   ============================================================ */
+
+document.addEventListener(
+  "keydown",
+  async event => {
+
+    if (
+      event.key ===
+      "ArrowRight"
+    ) {
+
+      await nextPhoto();
+
+      resetTimer();
+
     }
 
-    function createDots() {
-      dots = [];
 
-      const columns = Math.ceil(width / spacing) + 2;
-      const rows = Math.ceil(height / spacing) + 2;
+    else if (
+      event.key ===
+      "ArrowLeft"
+    ) {
 
-      for (let row = 0; row < rows; row++) {
-        for (let column = 0; column < columns; column++) {
-          const x = column * spacing;
-          const y = row * spacing;
+      await previousPhoto();
 
-          const underneathPhoto =
-            x > photoLeft &&
-            x < photoRight &&
-            y > photoTop &&
-            y < photoBottom;
+      resetTimer();
 
-          if (!underneathPhoto) {
-            dots.push({ x, y });
-          }
-        }
-      }
     }
 
-    function lerp(a, b, t) {
-      return a + (b - a) * t;
+
+    else if (
+      event.key === " "
+    ) {
+
+      event.preventDefault();
+
+      togglePause();
+
     }
 
-    function glowPosition(time) {
-      const inset = 24;
+  }
+);
 
-      const left   = photoLeft - inset;
-      const right  = photoRight + inset;
-      const top    = photoTop - inset;
-      const bottom = photoBottom + inset;
 
-      const horizontal = right - left;
-      const vertical = bottom - top;
-      const perimeter = horizontal * 2 + vertical * 2;
 
-      let rawDistance = (time / orbitTime) * perimeter;
-      let cycleDistance = rawDistance % (perimeter * 2);
+/* ============================================================
+   ANIMATED MATTE
+   ============================================================ */
 
-      let distance;
-      if (cycleDistance <= perimeter) {
-        distance = cycleDistance;
-      } else {
-        distance = (perimeter * 2) - cycleDistance;
+const canvas =
+  document.getElementById(
+    "dotAnimation"
+  );
+
+const ctx =
+  canvas.getContext("2d");
+
+
+let canvasWidth = 0;
+let canvasHeight = 0;
+
+let dots = [];
+
+let photoLeft = 0;
+let photoTop = 0;
+let photoRight = 0;
+let photoBottom = 0;
+
+
+
+const dotColor = {
+
+  r: 70,
+  g: 86,
+  b: 106
+
+};
+
+
+const glowColor = {
+
+  r: 125,
+  g: 205,
+  b: 255
+
+};
+
+
+const matteColor =
+  "#11161d";
+
+
+
+function resizeCanvas() {
+
+  const stageRect =
+    stage.getBoundingClientRect();
+
+
+  const frameRect =
+    photoFrame.getBoundingClientRect();
+
+
+  canvasWidth =
+    stageRect.width;
+
+  canvasHeight =
+    stageRect.height;
+
+
+  photoLeft =
+    frameRect.left -
+    stageRect.left;
+
+  photoTop =
+    frameRect.top -
+    stageRect.top;
+
+  photoRight =
+    photoLeft +
+    frameRect.width;
+
+  photoBottom =
+    photoTop +
+    frameRect.height;
+
+
+  const pixelRatio =
+    window.devicePixelRatio || 1;
+
+
+  canvas.width =
+    Math.floor(
+      canvasWidth *
+      pixelRatio
+    );
+
+
+  canvas.height =
+    Math.floor(
+      canvasHeight *
+      pixelRatio
+    );
+
+
+  canvas.style.width =
+    canvasWidth + "px";
+
+  canvas.style.height =
+    canvasHeight + "px";
+
+
+  ctx.setTransform(
+    pixelRatio,
+    0,
+    0,
+    pixelRatio,
+    0,
+    0
+  );
+
+
+  createDots();
+
+}
+
+
+
+function createDots() {
+
+  dots = [];
+
+
+  const spacing =
+    SETTINGS.dotSpacing;
+
+
+  const columns =
+    Math.ceil(
+      canvasWidth /
+      spacing
+    ) + 2;
+
+
+  const rows =
+    Math.ceil(
+      canvasHeight /
+      spacing
+    ) + 2;
+
+
+  for (
+    let row = 0;
+    row < rows;
+    row++
+  ) {
+
+    for (
+      let column = 0;
+      column < columns;
+      column++
+    ) {
+
+      const x =
+        column * spacing;
+
+      const y =
+        row * spacing;
+
+
+      /*
+         Do not waste dots
+         behind the photograph.
+      */
+
+      const behindPhoto =
+
+        x > photoLeft &&
+        x < photoRight &&
+        y > photoTop &&
+        y < photoBottom;
+
+
+      if (!behindPhoto) {
+
+        dots.push({
+          x,
+          y
+        });
+
       }
 
-      if (distance < horizontal) {
-        return { x: left + distance, y: top };
-      }
-
-      distance -= horizontal;
-
-      if (distance < vertical) {
-        return { x: right, y: top + distance };
-      }
-
-      distance -= vertical;
-
-      if (distance < horizontal) {
-        return { x: right - distance, y: bottom };
-      }
-
-      distance -= horizontal;
-
-      return { x: left, y: bottom - distance };
     }
 
-    function animate(ms) {
-      const time = ms / 1000;
+  }
 
-      ctx.fillStyle = backgroundColor;
-      ctx.fillRect(0, 0, width, height);
+}
 
-      const glow = glowPosition(time);
-      const glowX = glow.x;
-      const glowY = glow.y;
 
-      const gradient = ctx.createRadialGradient(
-        glowX, glowY, 0,
-        glowX, glowY, glowRadius * 1.5
+
+function interpolate(
+  a,
+  b,
+  amount
+) {
+
+  return (
+    a +
+    (b - a) *
+    amount
+  );
+
+}
+
+
+
+/* ============================================================
+   GLOW POSITION
+
+   Goes clockwise around the photo,
+   then reverses direction.
+   ============================================================ */
+
+function glowPosition(time) {
+
+  const inset =
+    24;
+
+
+  const left =
+    photoLeft - inset;
+
+  const right =
+    photoRight + inset;
+
+  const top =
+    photoTop - inset;
+
+  const bottom =
+    photoBottom + inset;
+
+
+  const horizontal =
+    right - left;
+
+  const vertical =
+    bottom - top;
+
+
+  const perimeter =
+
+    horizontal * 2 +
+    vertical * 2;
+
+
+  const rawDistance =
+
+    (
+      time /
+      SETTINGS.orbitTime
+    )
+
+    * perimeter;
+
+
+  const cycleDistance =
+
+    rawDistance %
+    (perimeter * 2);
+
+
+  let distance;
+
+
+  if (
+    cycleDistance <=
+    perimeter
+  ) {
+
+    distance =
+      cycleDistance;
+
+  }
+
+  else {
+
+    distance =
+
+      perimeter * 2 -
+      cycleDistance;
+
+  }
+
+
+
+  /* Top */
+
+  if (
+    distance <
+    horizontal
+  ) {
+
+    return {
+
+      x:
+        left +
+        distance,
+
+      y:
+        top
+
+    };
+
+  }
+
+
+  distance -=
+    horizontal;
+
+
+
+  /* Right */
+
+  if (
+    distance <
+    vertical
+  ) {
+
+    return {
+
+      x:
+        right,
+
+      y:
+        top +
+        distance
+
+    };
+
+  }
+
+
+  distance -=
+    vertical;
+
+
+
+  /* Bottom */
+
+  if (
+    distance <
+    horizontal
+  ) {
+
+    return {
+
+      x:
+        right -
+        distance,
+
+      y:
+        bottom
+
+    };
+
+  }
+
+
+  distance -=
+    horizontal;
+
+
+
+  /* Left */
+
+  return {
+
+    x:
+      left,
+
+    y:
+      bottom -
+      distance
+
+  };
+
+}
+
+
+
+/* ============================================================
+   DRAW ANIMATION
+   ============================================================ */
+
+function animate(
+  milliseconds
+) {
+
+  const time =
+    milliseconds / 1000;
+
+
+  ctx.fillStyle =
+    matteColor;
+
+
+  ctx.fillRect(
+    0,
+    0,
+    canvasWidth,
+    canvasHeight
+  );
+
+
+  const glow =
+    glowPosition(time);
+
+
+  const glowX =
+    glow.x;
+
+  const glowY =
+    glow.y;
+
+
+
+  /*
+     Soft glow beneath dots
+  */
+
+  const gradient =
+
+    ctx.createRadialGradient(
+
+      glowX,
+      glowY,
+      0,
+
+      glowX,
+      glowY,
+      SETTINGS.glowRadius *
+      1.5
+
+    );
+
+
+  gradient.addColorStop(
+    0,
+    "rgba(130,210,255,.30)"
+  );
+
+
+  gradient.addColorStop(
+    .45,
+    "rgba(100,180,240,.10)"
+  );
+
+
+  gradient.addColorStop(
+    1,
+    "rgba(100,180,240,0)"
+  );
+
+
+  ctx.fillStyle =
+    gradient;
+
+
+  ctx.fillRect(
+    0,
+    0,
+    canvasWidth,
+    canvasHeight
+  );
+
+
+
+  /*
+     Dot grid
+  */
+
+  for (
+    const dot of dots
+  ) {
+
+    const dx =
+      dot.x - glowX;
+
+    const dy =
+      dot.y - glowY;
+
+
+    const distance =
+
+      Math.sqrt(
+        dx * dx +
+        dy * dy
       );
 
-      gradient.addColorStop(0, "rgba(130,210,255,.30)");
-      gradient.addColorStop(0.45, "rgba(100,180,240,.10)");
-      gradient.addColorStop(1, "rgba(100,180,240,0)");
 
-      ctx.fillStyle = gradient;
-      ctx.fillRect(0, 0, width, height);
+    let influence =
+      0;
 
-      for (const dot of dots) {
-        const dx = dot.x - glowX;
-        const dy = dot.y - glowY;
-        const distance = Math.sqrt(dx * dx + dy * dy);
 
-        let influence = 0;
+    if (
+      distance <
+      SETTINGS.glowRadius
+    ) {
 
-        if (distance < glowRadius) {
-          influence = 1 - distance / glowRadius;
-          influence = Math.pow(influence, glowPower);
-        }
+      influence =
 
-        const r = Math.round(lerp(dotColor.r, glowColor.r, influence));
-        const g = Math.round(lerp(dotColor.g, glowColor.g, influence));
-        const b = Math.round(lerp(dotColor.b, glowColor.b, influence));
-        const radius = lerp(normalRadius, normalRadius * 2.8, influence);
-        const alpha = lerp(0.30, 1, influence);
+        1 -
+        distance /
+        SETTINGS.glowRadius;
 
-        ctx.beginPath();
-        ctx.arc(dot.x, dot.y, radius, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${r},${g},${b},${alpha})`;
-        ctx.fill();
-      }
 
-      requestAnimationFrame(animate);
+      influence =
+
+        Math.pow(
+          influence,
+          SETTINGS.glowPower
+        );
+
     }
 
-    window.addEventListener("resize", resizeCanvas);
-    new ResizeObserver(resizeCanvas).observe(stage);
 
-    // Make sure first image is loaded before sizing
-    slideA.addEventListener("load", resizeCanvas);
-    slideB.addEventListener("load", resizeCanvas);
+    const red =
 
-    resizeCanvas();
-    requestAnimationFrame(animate);
-  </script>
+      Math.round(
+
+        interpolate(
+          dotColor.r,
+          glowColor.r,
+          influence
+        )
+
+      );
+
+
+    const green =
+
+      Math.round(
+
+        interpolate(
+          dotColor.g,
+          glowColor.g,
+          influence
+        )
+
+      );
+
+
+    const blue =
+
+      Math.round(
+
+        interpolate(
+          dotColor.b,
+          glowColor.b,
+          influence
+        )
+
+      );
+
+
+    const radius =
+
+      interpolate(
+
+        SETTINGS.dotRadius,
+
+        SETTINGS.dotRadius *
+        2.8,
+
+        influence
+
+      );
+
+
+    const alpha =
+
+      interpolate(
+        .30,
+        1,
+        influence
+      );
+
+
+    ctx.beginPath();
+
+
+    ctx.arc(
+      dot.x,
+      dot.y,
+      radius,
+      0,
+      Math.PI * 2
+    );
+
+
+    ctx.fillStyle =
+
+      `rgba(` +
+      `${red},` +
+      `${green},` +
+      `${blue},` +
+      `${alpha})`;
+
+
+    ctx.fill();
+
+  }
+
+
+  requestAnimationFrame(
+    animate
+  );
+
+}
+
+
+
+/* ============================================================
+   RESIZE HANDLING
+   ============================================================ */
+
+window.addEventListener(
+  "resize",
+  resizeCanvas
+);
+
+
+new ResizeObserver(
+  resizeCanvas
+).observe(stage);
+
+
+
+/* ============================================================
+   START
+   ============================================================ */
+
+resizeCanvas();
+
+requestAnimationFrame(
+  animate
+);
+
+loadPhotoList();
+
+</script>
+
+
 </body>
 </html>
