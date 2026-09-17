@@ -184,12 +184,102 @@
     const photoFrame = document.querySelector(".photo-frame");
 
     // ===== slideshow settings =====
-    const photos = [
-      "DSC_3062.jpg",
-      "DSC_3063.jpg",
-      "DSC_3064.jpg",
-      "DSC_3065.jpg"
-    ];
+let photos = [];
+let currentIndex = 0;
+let showingA = true;
+
+async function loadPhotos() {
+  const apiURL =
+    "https://api.github.com/repos/y5cf5hg9nd-prog/First-Repository/contents/photos";
+
+  try {
+    const response = await fetch(apiURL);
+
+    if (!response.ok) {
+      throw new Error("Could not read photo directory");
+    }
+
+    const files = await response.json();
+
+    photos = files
+      .filter(file =>
+        file.type === "file" &&
+        /\.(jpg|jpeg|png|webp)$/i.test(file.name)
+      )
+      .sort((a, b) =>
+        a.name.localeCompare(b.name, undefined, {
+          numeric: true,
+          sensitivity: "base"
+        })
+      )
+      .map(file => file.download_url);
+
+    if (photos.length === 0) {
+      console.error("No image files found in photos folder.");
+      return;
+    }
+
+    // Preload all photographs
+    photos.forEach(src => {
+      const img = new Image();
+      img.src = src;
+    });
+
+    // Load the first image immediately
+    slideA.src = photos[0];
+    slideA.classList.add("visible");
+
+    // Load the second image in preparation for the first crossfade
+    if (photos.length > 1) {
+      slideB.src = photos[1];
+    }
+
+    updateCounter();
+
+    // Only run the slideshow if there is more than one image
+    if (photos.length > 1) {
+      startTimer();
+    }
+
+  } catch (error) {
+    console.error("Photo loading error:", error);
+  }
+}
+
+
+function advanceSlide() {
+  if (photos.length < 2) return;
+
+  const nextIndex =
+    (currentIndex + 1) % photos.length;
+
+  const incoming =
+    showingA ? slideB : slideA;
+
+  const outgoing =
+    showingA ? slideA : slideB;
+
+  incoming.src = photos[nextIndex];
+
+  requestAnimationFrame(() => {
+    incoming.classList.add("visible");
+    outgoing.classList.remove("visible");
+  });
+
+  currentIndex = nextIndex;
+  showingA = !showingA;
+
+  updateCounter();
+
+  setTimeout(
+    resizeCanvas,
+    fadeDuration + 100
+  );
+}
+
+
+// Start everything after the page loads
+loadPhotos();
 
     const slideDuration = 10000; // 10 seconds between changes
     const fadeDuration = 1400;   // should match CSS transition roughly
