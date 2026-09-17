@@ -224,24 +224,6 @@
       setTimeout(resizeCanvas, fadeDuration + 100);
     }
 
-    function advanceSlide() {
-  const nextIndex = (currentIndex + 1) % photos.length;
-  const incoming = showingA ? slideB : slideA;
-  const outgoing = showingA ? slideA : slideB;
-
-  incoming.src = photos[nextIndex];
-
-  requestAnimationFrame(() => {
-    incoming.classList.add("visible");
-    outgoing.classList.remove("visible");
-  });
-
-  currentIndex = nextIndex;
-  showingA = !showingA;
-
-  setTimeout(resizeCanvas, fadeDuration + 100);
-}
-
 
 /* ===== slideshow controls ===== */
 
